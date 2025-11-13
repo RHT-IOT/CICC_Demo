@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Office Environment Monitoring Dashboard</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome -->
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.8/dist/chart.umd.min.js"></script>
+    <!-- Three.js -->
+    <script src="https://cdn.jsdelivr.net/npm/three@0.132.2/build/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.132.2/examples/js/controls/OrbitControls.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.132.2/examples/js/loaders/FBXLoader.js"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#0ea5e9',
+                        secondary: '#0369a1',
+                        accent: '#38bdf8',
+                        success: '#22c55e',
+                        warning: '#f59e0b',
+                        danger: '#ef4444',
+                        dark: '#0f172a',
+                        light: '#f8fafc'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .bg-gradient-dashboard {
+                background: linear-gradient(
+                    0deg,
+                    #ffffff 0%,     /* pure white at the top */
+                    #e3ffdb 50%,    /* green in the middle */
+                    #ffffff 100%    /* white again at the bottom */
+                );
+            }
+
+            .text-shadow {
+                text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            }
+            .card {
+                @apply bg-white/10 backdrop-blur-lg rounded-xl border border-white/20;
+            }
+            .card-header {
+                @apply text-xl font-bold text-black mb-2 flex items-center justify-between;
+            }
+            .card-body {
+                @apply p-4;
+            }
+            .table-row {
+                @apply border-b border-white/10 py-2;
+            }
+            .table-cell {
+                @apply px-4 py-2 text-black;
+            }
+            .status-online {
+                @apply bg-success rounded-full w-3 h-3 inline-block mr-2;
+            }
+            .status-offline {
+                @apply bg-danger rounded-full w-3 h-3 inline-block mr-2;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gradient-dashboard min-h-screen text-black">
+    <div class="container mx-auto px-4">
+        <!-- Header -->
+        <header class="mb-2">
+            <div class="flex justify-between items-center">
+                <div>
+                 <img src="logo.png" 
+                                 alt="Office Floor Plan" 
+                                 class="w-72 h-auto ">
+                </div>
+                <div class="flex justify-between">
+                <!-- Left: Time/Date -->
+                <div class="text-center mt-5">
+                    <p class="text-5xl text-black" id="last-updated-time"></p>
+                    <p class="font-medium text-black" id="last-updated-date"></p>
+                </div>
+                <div class="flex flex-col items-center ml-8">
+                    <img id="icon" alt="Weather Icon" class="h-24 w-24 my-2">
+                </div>
+                </div>
+                <!-- Right: Weather Column -->
+                <div class="flex flex-col items-center">
+                    <p class="text-4xl text-black"><span id="temp"></span> °C</p>
+                    <p class="text-4xl text-black"><span id="humidity"></span> %</p>
+                </div>
+                </div>
+
+            </div>
+        </header>
+        <!-- Main Content -->
+        <main class="grid grid-cols-1 gap-6 ml-36 mr-36">
+            <!-- 3D Floor Plan Section -->
+            <section class="card h-auto">
+                <div class="card-header">
+                    <span><p class = "text-black">3D FLOOR PLAN</p></span>
+                    
+                </div>
+                <div class="card-body">
+                    <div class="relative">
+                        <!-- Fallback image since we can't load FBX -->
+                        <div id="floorplan-container" class="w-full h-full relative">
+                            <img src="Picture1.png" 
+                                 alt="Office Floor Plan" 
+                                 class="w-screen h-auto object-contain">
+                            
+                            <!-- SVG Overlay for polygonal zones -->
+                            <svg class="absolute top-0 left-0 w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
+                                <!-- Polygonal zones that will change color 
+                                id: 'zone1', name:  'Workstation A'
+                                id: 'zone2', name:  'Workstation B'
+                                id: 'zone3', name:  'Meeting Room1'
+                                id: 'zone4', name:  'Meeting Room2'
+                                id: 'zone5', name:  'Meeting Room3'
+                                id: 'zone15', name:  'Meeting Room4'
+                                id: 'zone6', name:  'Reception'
+                                id: 'zone7', name:  'Pantry1'
+                                id: 'zone8', name:  'Pantry2'
+                                id: 'zone10', name: 'Male Toilet'
+                                id: 'zone11', name: 'Female Toilet'
+                                id: 'zone12', name: 'Lobby'
+                                id: 'zone13', name: 'Lift Area'
+                                id: 'zone14', name: 'Corridore'
+                                -->
+                                <polygon class="zone" data-zone="zone1" points="45,79 57,95 62,88 65.8,92.5 80,74 64,58" style="fill-opacity:0.7;"></polygon>
+                                <polygon class="zone" data-zone="zone2" points="64.4,57.4 80.1,74.2 92.7,58.1 89.6,54.9 93.6,49.7 86,43 91.5,36.7 86.3,31.9 88.2,29.8 72.1,16.0 60.1,27.6 78.1,43.7" style="fill-opacity:0.7;"></polygon>
+                                <polygon class="zone" data-zone="zone3" points="25.2,60.9 19.9,55.3 15.7,59.3 20.8,65.6" style="fill-opacity:0.7;"></polygon>
+                                <polygon class="zone" data-zone="zone4" points="10.3,64.2 19.9,55.1 14.5,49 5.1,57.7" style="fill-opacity:0.7;"></polygon>
+                                <!-- <polygon class="zone" data-zone="zone5" points="35,55 60,55 60,90 55,95 40,95 35,90" style="fill-opacity:0.7;"></polygon>
+                                <polygon class="zone" data-zone="zone15" points="35,55 60,55 60,90 55,95 40,95 35,90" style="fill-opacity:0.7;"></polygon>
+                                <polygon class="zone" data-zone="zone6" points="65,55 90,55 90,90 85,95 70,95 65,90" style="fill-opacity:0.7;"></polygon> -->
+                            </svg>
+                            <div id="mouse-coords" 
+                                class="absolute top-2 left-2 bg-white/70 p-1 rounded text-xs text-black">
+                                X: 0, Y: 0
+                            </div>
+                        </div>
+                        
+                        <!-- Legend -->
+                        <div class="absolute bottom-2 right-2 bg-white/30 p-2 rounded-lg text-sm">
+                            <div class="flex items-center mb-1">
+                                <span class="bg-success rounded-full w-3 h-3 inline-block mr-2"></span>
+                                <span><p class = "text-black">Available</p></span>
+                            </div>
+                            <div class="flex items-center">
+                                <span class="bg-danger rounded-full w-3 h-3 inline-block mr-2"></span>
+                                <span><p class = "text-black">Occupied</p></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- CO2e Reduction Table -->
+            <section class="card">
+                <div class="card-header">
+                    <span>TOP 5 ZONES CO2e REDUCTION</span>
+                    <div class="text-sm text-blue-900">
+                        <i class="fa fa-info-circle mr-1"></i> Values update every minute
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead>
+                                <tr class="border-b border-white/20">
+                                    <th class="table-cell text-left">ZONE</th>
+                                    <th class="table-cell text-right">CO2e REDUCTION (Kg)</th>
+                                    <th class="table-cell text-center">STATUS</th>
+                                </tr>
+                            </thead>
+                            <tbody id="co2e-table-body">
+                                <!-- Table rows will be populated by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- CO2e Reduction Chart -->
+            <section class="card">
+                <div class="card-header">
+                    <span id="chart-title">LAST 12 MONTHS CO2e REDUCTION (Kg)</span>
+                    <div class="flex items-center">
+                        <button id="toggle-chart" class="bg-white/10 hover:bg-white/20 px-3 py-1 rounded text-sm transition-colors">
+                            <i class="fa fa-exchange mr-1"></i> Switch to 14 Days
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="h-50">
+                        <canvas id="co2e-chart"></canvas>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Energy Efficiency Score -->
+           <!-- 
+               
+
+                <div class="flex justify-between items-center">
+                    <canvas id="efficiency-chart" class="w-1/2 h-1/2"></canvas>
+                    <canvas id="efficiency-chart2" class="w-full h-1/2"></canvas>
+                </div>
+            -->
+            <section class="card">
+            <div class="flex justify-between items-center p-4">
+                <span class="font-bold">ENERGY EFFICIENCY SCORE</span>
+                <div class="text-sm font-medium text-accent">87/100</div>
+            </div>
+            <div  class="flex justify-between">
+                <div class="flex flex-col items-center">
+                <canvas id="efficiency-chart" class="w-1/2 h-48"></canvas>
+                </div>
+                <div class="flex flex-col items-center">
+                <canvas id="efficiency-chart2" class="w-1/2 h-48"></canvas>
+                </div>
+            </div>
+            </section> 
+
+
+
+        </main>
+
+        
+    </div>
+
+    <script>
+        // Mock data
+        const zones = [
+            { id: 'zone1', name:  'Workstation A', co2eReduction: 185, status: 'available' },
+            { id: 'zone2', name:  'Workstation B', co2eReduction: 210, status: 'occupied' },
+            { id: 'zone3', name:  'Meeting Room1', co2eReduction: 195, status: 'available' },
+            { id: 'zone4', name:  'Meeting Room2', co2eReduction: 225, status: 'occupied' },
+            { id: 'zone5', name:  'Meeting Room3', co2eReduction: 175, status: 'available' },
+            { id: 'zone15', name:  'Meeting Room4', co2eReduction: 175, status: 'available' },
+            { id: 'zone6', name:  'Reception', co2eReduction: 165, status: 'occupied' },
+            { id: 'zone7', name:  'Pantry1', co2eReduction: 165, status: 'occupied' },
+            { id: 'zone8', name:  'Pantry2', co2eReduction: 165, status: 'occupied' },
+            { id: 'zone10', name: 'Male Toilet', co2eReduction: 165, status: 'occupied' },
+            { id: 'zone11', name: 'Female Toilet', co2eReduction: 165, status: 'occupied' },
+            { id: 'zone12', name: 'Lobby', co2eReduction: 165, status: 'occupied' },
+            { id: 'zone13', name: 'Lift Area', co2eReduction: 165, status: 'occupied' },
+            { id: 'zone14', name: 'Corridore', co2eReduction: 165, status: 'occupied' }
+        ];
+
+        const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        const last12MonthsData = [1850, 1920, 2010, 1980, 2100, 2150, 2200, 2250, 2300, 2350, 2400, 2450];
+        
+        const days = Array.from({length: 14}, (_, i) => `Day ${i+1}`);
+        const last14DaysData = [85, 92, 88, 95, 100, 105, 98, 110, 115, 120, 118, 125, 130, 135];
+
+        const efficiencyCategories = ['Lighting', 'HVAC', 'Equipment', 'Water', 'Overall'];
+        const efficiencyScores = [82, 90, 78, 95, 87];
+        const efficiencyCategories2 = ['Tokyo, Japan', 'New York, USA', 'Singapore', 'CICC'];
+        const efficiencyScores2 = [73.8, 77.2, 78.4, 87];
+        // DOM Elements
+        const co2eTableBody = document.getElementById('co2e-table-body');
+        const co2eChartCanvas = document.getElementById('co2e-chart');
+        const efficiencyChartCanvas = document.getElementById('efficiency-chart');
+        const horizontalChartCanvas = document.getElementById('efficiency-chart2');
+        const toggleChartBtn = document.getElementById('toggle-chart');
+        const chartTitle = document.getElementById('chart-title');
+        const lastUpdatedTime = document.getElementById('last-updated-time');
+        const lastUpdatedDate = document.getElementById('last-updated-date');
+        const zoneElements = document.querySelectorAll('.zone');
+        const container = document.getElementById('floorplan-container');
+        const coordsDisplay = document.getElementById('mouse-coords');
+
+        container.addEventListener('mousemove', (event) => {
+            // Get mouse position relative to container
+            const rect = container.getBoundingClientRect();
+            const x = ((event.clientX - rect.left) / rect.width * 100).toFixed(1);
+            const y = ((event.clientY - rect.top) / rect.height * 100).toFixed(1);
+
+            // Update text
+            coordsDisplay.textContent = `X: ${x}, Y: ${y}`;
+        });
+        // Update timestamp
+        function updateTimestamp() {
+            const now = new Date();
+            const formattedDate = now.toISOString().slice(0, 10);
+            const formattedTime = now.toTimeString().slice(0, 8);
+            lastUpdatedTime.textContent = `${formattedTime}`;
+            lastUpdatedDate.textContent = `${formattedDate}`;
+        }
+
+        // Initialize zone colors
+        function initZoneColors() {
+            zoneElements.forEach(el => {
+                const zoneId = el.dataset.zone;
+                const zone = zones.find(z => z.id === zoneId);
+                el.style.fill = zone.status === 'available' ? 'rgba(34, 197, 94, 0.5)' : 'rgba(239, 68, 68, 0.5)';
+            });
+        }
+
+        // Randomly update zone statuses
+        function updateZoneStatuses() {
+            zoneElements.forEach(el => {
+                const isAvailable = Math.random() > 0.3; // 70% chance available
+                el.style.fill = isAvailable ? 'rgba(34, 197, 94, 0.5)' : 'rgba(239, 68, 68, 0.5)';
+                
+                // Update zone data
+                const zoneId = el.dataset.zone;
+                const zone = zones.find(z => z.id === zoneId);
+                zone.status = isAvailable ? 'available' : 'occupied';
+            });
+        }
+
+        // Initialize CO2e table
+        function initCO2eTable() {
+            // Sort zones by CO2e reduction
+            const sortedZones = [...zones].sort((a, b) => b.co2eReduction - a.co2eReduction).slice(0, 5);
+            
+            co2eTableBody.innerHTML = '';
+            
+            sortedZones.forEach(zone => {
+                const row = document.createElement('tr');
+                row.className = 'table-row';
+                
+                row.innerHTML = `
+                    <td class="table-cell font-medium">${zone.name}</td>
+                    <td class="table-cell text-right font-mono">${zone.co2eReduction.toLocaleString()}</td>
+                    <td class="table-cell text-center">
+                        <span class="status-${zone.status}"></span>
+                        <span>${zone.status === 'available' ? 'Available' : 'Occupied'}</span>
+                    </td>
+                `;
+                
+                co2eTableBody.appendChild(row);
+            });
+        }
+
+        // Update CO2e values
+        function updateCO2eValues() {
+            zones.forEach(zone => {
+                const change = Math.floor(Math.random() * 11) - 5; // -5 to +5
+                zone.co2eReduction = Math.max(100, zone.co2eReduction + change);
+                
+                const changeEl = document.getElementById(`change-${zone.id}`);
+                if (changeEl) {
+                    const changeClass = change >= 0 ? 'text-success' : 'text-danger';
+                    const changeSign = change >= 0 ? '+' : '';
+                    changeEl.textContent = `${changeSign}${change}`;
+                    changeEl.className = `table-cell text-right font-mono ${changeClass}`;
+                }
+            });
+            
+            // Re-sort and update table
+            initCO2eTable();
+        }
+
+        // CO2e Chart
+        let co2eChart;
+        let is12MonthsView = true;
+
+        function initCO2eChart() {
+            const ctx = co2eChartCanvas.getContext('2d');
+            
+            co2eChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: months,
+                    datasets: [{
+                        label: 'CO2e Reduction (Kg)',
+                        data: last12MonthsData,
+                        borderColor: '#38bdf8',
+                        backgroundColor: 'rgba(56, 189, 248, 0.1)',
+                        borderWidth: 2,
+                        fill: true,
+                        tension: 0.4,
+                        pointBackgroundColor: '#ffffff',
+                        pointBorderColor: '#38bdf8',
+                        pointRadius: 4,
+                        pointHoverRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false,
+                            backgroundColor: 'rgba(15, 23, 42, 0.9)',
+                            titleColor: '#ffffff',
+                            bodyColor: '#e2e8f0',
+                            borderColor: '#38bdf8',
+                            borderWidth: 1,
+                            padding: 12,
+                            displayColors: false,
+                            callbacks: {
+                                label: function(context) {
+                                    return `CO2e Reduction: ${context.raw.toLocaleString()} Kg`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: {
+                                display: false,
+                                drawBorder: false
+                            },
+                            ticks: {
+                                color: '#94a3b8'
+                            }
+                        },
+                        y: {
+                            grid: {
+                                color: 'rgba(148, 163, 184, 0.1)',
+                                drawBorder: false
+                            },
+                            ticks: {
+                                color: '#94a3b8',
+                                callback: function(value) {
+                                    return value.toLocaleString();
+                                }
+                            }
+                        }
+                    },
+                    interaction: {
+                        intersect: false,
+                        mode: 'index'
+                    },
+                    animation: {
+                        duration: 1000
+                    }
+                }
+            });
+        }
+
+        function toggleChartView() {
+            is12MonthsView = !is12MonthsView;
+            
+            if (is12MonthsView) {
+                co2eChart.data.labels = months;
+                co2eChart.data.datasets[0].data = last12MonthsData;
+                chartTitle.textContent = 'LAST 12 MONTHS CO2e REDUCTION (Kg)';
+                toggleChartBtn.innerHTML = '<i class="fa fa-exchange mr-1"></i> Switch to 14 Days';
+            } else {
+                co2eChart.data.labels = days;
+                co2eChart.data.datasets[0].data = last14DaysData;
+                chartTitle.textContent = 'LAST 14 DAYS CO2e REDUCTION (Kg)';
+                toggleChartBtn.innerHTML = '<i class="fa fa-exchange mr-1"></i> Switch to 12 Months';
+            }
+            
+            co2eChart.update();
+        }
+
+        // Energy Efficiency Chart
+        function initEfficiencyChart() {
+            const ctx = efficiencyChartCanvas.getContext('2d');
+            
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: efficiencyCategories,
+                    datasets: [{
+                        label: 'Score',
+                        data: efficiencyScores,
+                        backgroundColor: [
+                            'rgba(56, 189, 248, 0.7)',
+                            'rgba(14, 165, 233, 0.7)',
+                            'rgba(6, 182, 212, 0.7)',
+                            'rgba(8, 145, 178, 0.7)',
+                            'rgba(12, 74, 110, 0.7)'
+                        ],
+                        borderColor: [
+                            'rgba(56, 189, 248, 1)',
+                            'rgba(14, 165, 233, 1)',
+                            'rgba(6, 182, 212, 1)',
+                            'rgba(8, 145, 178, 1)',
+                            'rgba(12, 74, 110, 1)'
+                        ],
+                        borderWidth: 1,
+                        borderRadius: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(15, 23, 42, 0.9)',
+                            titleColor: '#ffffff',
+                            bodyColor: '#e2e8f0',
+                            borderColor: '#38bdf8',
+                            borderWidth: 1,
+                            padding: 12,
+                            displayColors: false,
+                            callbacks: {
+                                label: function(context) {
+                                    return `Score: ${context.raw}/100`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: {
+                                display: false,
+                                drawBorder: false
+                            },
+                            ticks: {
+                                color: '#94a3b8'
+                            }
+                        },
+                        y: {
+                            grid: {
+                                color: 'rgba(148, 163, 184, 0.1)',
+                                drawBorder: false
+                            },
+                            ticks: {
+                                color: '#94a3b8',
+                                stepSize: 20,
+                                max: 100
+                            }
+                        }
+                    },
+                    animation: {
+                        duration: 1000
+                    }
+                }
+            });
+        }
+        function fetchWeather() {
+        fetch("https://data.weather.gov.hk/weatherAPI/opendata/weather.php?dataType=rhrread&station=HKO&lang=en")
+            .then(response => response.json())
+            .then(data => {
+            // Temperature at Hong Kong Observatory
+            const tempData = data.temperature.data.find(
+                station => station.place === "Hong Kong Observatory"
+            );
+            document.getElementById("temp").innerText = tempData.value;
+
+            // Humidity at Hong Kong Observatory
+            const humidityData = data.humidity.data.find(
+                station => station.place === "Hong Kong Observatory"
+            );
+            document.getElementById("humidity").innerText = humidityData.value;
+
+            // Forecast icon number
+            const iconNumber = data.icon[0];
+            // Use HKO official icon URL
+            document.getElementById("icon").src =
+                "https://www.hko.gov.hk/images/HKOWxIconOutline/pic" + iconNumber + ".png";
+            })
+            .catch(err => console.error("Error fetching HKO data:", err));
+        }
+        function initHorizontalEfficiencyChart() {
+            const ctx = horizontalChartCanvas.getContext('2d');
+
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: efficiencyCategories2,
+                    datasets: [{
+                        label: 'Score',
+                        data: efficiencyScores,
+                        backgroundColor: [
+                            'rgba(56, 189, 248, 0.7)',
+                            'rgba(14, 165, 233, 0.7)',
+                            'rgba(6, 182, 212, 0.7)',
+                            'rgba(8, 145, 178, 0.7)',
+                            'rgba(12, 74, 110, 0.7)'
+                        ],
+                        borderColor: [
+                            'rgba(56, 189, 248, 1)',
+                            'rgba(14, 165, 233, 1)',
+                            'rgba(6, 182, 212, 1)',
+                            'rgba(8, 145, 178, 1)',
+                            'rgba(12, 74, 110, 1)'
+                        ],
+                        borderWidth: 1,
+                        borderRadius: 4
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',   // 👈 this makes bars horizontal
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            backgroundColor: 'rgba(15, 23, 42, 0.9)',
+                            titleColor: '#ffffff',
+                            bodyColor: '#e2e8f0',
+                            borderColor: '#38bdf8',
+                            borderWidth: 1,
+                            padding: 12,
+                            displayColors: false,
+                            callbacks: {
+                                label: function(context) {
+                                    return `Score: ${context.raw}/100`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: { color: 'rgba(148, 163, 184, 0.1)', drawBorder: false },
+                            ticks: { color: '#94a3b8', stepSize: 20, max: 100 }
+                        },
+                        y: {
+                            grid: { display: false, drawBorder: false },
+                            ticks: { color: '#94a3b8' }
+                        }
+                    },
+                    animation: { duration: 1000 }
+                }
+            });
+        }
+
+        // Initialize everything
+        function init() {
+            updateTimestamp();
+            initZoneColors();
+            fetchWeather();
+            initCO2eTable();
+            initCO2eChart();
+            initEfficiencyChart();
+            initHorizontalEfficiencyChart();
+            
+            // Event listeners
+            toggleChartBtn.addEventListener('click', toggleChartView);
+            
+            // Set up intervals
+            setInterval(updateTimestamp, 1000);
+            setInterval(updateZoneStatuses, 30000); // Update zone statuses every 30 seconds
+            setInterval(updateCO2eValues, 60000); // Update CO2e values every minute
+            
+            // Auto toggle chart view every 5 minutes
+            setInterval(() => {
+                    toggleChartView();
+            }, 30000);
+            setInterval(fetchWeather, 600000);
+        }
+
+        // Start the application when the DOM is loaded
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
