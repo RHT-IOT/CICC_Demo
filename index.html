@@ -115,12 +115,13 @@
                     <div class="relative">
                         <!-- Fallback image since we can't load FBX -->
                         <div id="floorplan-container" class="w-full h-full relative">
-                            <img src="Picture1.png" 
+                            <img id="floorplan-img"
+                                 src="L20.png" 
                                  alt="Office Floor Plan" 
                                  class="w-screen h-auto object-contain">
                             
                             <!-- SVG Overlay for polygonal zones -->
-                            <svg class="absolute top-0 left-0 w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
+                            <svg id="zones-L20" class="absolute top-0 left-0 w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
                                 <!-- Polygonal zones that will change color 
                                 id: 'zone1', name:  'Workstation A'
                                 id: 'zone2', name:  'Workstation B'
@@ -136,15 +137,64 @@
                                 id: 'zone12', name: 'Lobby'
                                 id: 'zone13', name: 'Lift Area'
                                 id: 'zone14', name: 'Corridore'
+ 
+
+ 
+
+ 
+
+ 
+                                
                                 -->
-                                <polygon class="zone" data-zone="zone1" points="45,79 57,95 62,88 65.8,92.5 80,74 64,58" style="fill-opacity:0.7;"></polygon>
-                                <polygon class="zone" data-zone="zone2" points="64.4,57.4 80.1,74.2 92.7,58.1 89.6,54.9 93.6,49.7 86,43 91.5,36.7 86.3,31.9 88.2,29.8 72.1,16.0 60.1,27.6 78.1,43.7" style="fill-opacity:0.7;"></polygon>
-                                <polygon class="zone" data-zone="zone3" points="25.2,60.9 19.9,55.3 15.7,59.3 20.8,65.6" style="fill-opacity:0.7;"></polygon>
-                                <polygon class="zone" data-zone="zone4" points="10.3,64.2 19.9,55.1 14.5,49 5.1,57.7" style="fill-opacity:0.7;"></polygon>
-                                <!-- <polygon class="zone" data-zone="zone5" points="35,55 60,55 60,90 55,95 40,95 35,90" style="fill-opacity:0.7;"></polygon>
-                                <polygon class="zone" data-zone="zone15" points="35,55 60,55 60,90 55,95 40,95 35,90" style="fill-opacity:0.7;"></polygon>
-                                <polygon class="zone" data-zone="zone6" points="65,55 90,55 90,90 85,95 70,95 65,90" style="fill-opacity:0.7;"></polygon> -->
+                                <polygon class="zone " data-zone="zone1" points="43.6,8.8 52.2,9.6 51.1,12.8 42.3 11.8" style="fill-opacity:0.7;stroke:black; stroke-width:0.5;"></polygon>
+                                <polygon class="zone" data-zone="zone2" points="52.2,9.6, 51.1,12.8 59.8,13.4 60.9,10.4" style="fill-opacity:0.7;stroke:black; stroke-width:0.5;"></polygon>
+                                <polygon class="zone" data-zone="zone3" points="59.8,13.4 60.9,10.4 69.2,11.2 68.3,14.4" style="fill-opacity:0.7;stroke:black; stroke-width:0.5;"></polygon>
+                                <polygon class="zone" data-zone="zone4" points="69.2,11.2 68.3,14.4 73.6,14.8 74.4,11.7" style="fill-opacity:0.7;stroke:black; stroke-width:0.5;"></polygon>
+                                <polygon class="zone" data-zone="zone5" points="73.6,14.8 74.4,11.7 87.3,13.0 86.5,16.0" style="fill-opacity:0.7;stroke:black; stroke-width:0.5;"></polygon> 
+                                <polygon class="zone" data-zone="zone15" points="42.3,11.8 80.6,15.5 79.9,19.3 85.9,20.2 85.0,24.6 36.9,19.6 40.7,16.4" style="fill-opacity:0.7;stroke:black; stroke-width:0.5;"></polygon>
+                                <polygon class="zone" data-zone="zone6" points="80.6,15.5 86.5,16 85.8,20 79.9,19.3" style="fill-opacity:0.7;stroke:black; stroke-width:0.5;"></polygon> 
+                                <polygon class="zone" data-zone="zone7" points="36.9,19.6 34.6,21.6 26.4,42.4 41.1,44.0 42.2,41.5 45.2,41.9 50.3,25.8 48.7,25.6 50.4,21.0" style="fill-opacity:0.7;stroke:black; stroke-width:0.5;"></polygon> 
+                                <polygon class="zone" data-zone="zone8" points="26.4,42.2 25.6,44.3 24.5,46.0 31.6,46.9 33.0,43.1" style="fill-opacity:0.7;stroke:black; stroke-width:0.5;"></polygon> 
+                                <polygon class="zone" data-zone="zone9" points="24.4,45.9 31.5,46.8 30.5,50.1 38.9,51.1 37.1,56.0 20.7,54.2 20.0,55.6 18.4,55.4" style="fill-opacity:0.7;stroke:black; stroke-width:0.5;"></polygon> 
+                                <polygon class="zone" data-zone="zone10" points="18.2,55.3 11.9,65.2 36.3,68.6 40.0,57.5 36.7,57.0 37.0,56.3 20.7,54.2 20.0,55.6" style="fill-opacity:0.7;stroke:black; stroke-width:0.5;"></polygon> 
+                                <polygon class="zone" data-zone="zone11" points="11.9,65.5 6.3,73.7 22.6,75.5 25.5,67.3" style="fill-opacity:0.7;stroke:black; stroke-width:0.5;"></polygon> 
+                                <polygon class="zone" data-zone="zone12" points="22.6,75.5 25.5,67.3 29.0,67.6 26.0,75.9 " style="fill-opacity:0.7;stroke:black; stroke-width:0.5;"></polygon> 
+                                <polygon class="zone" data-zone="zone13" points="6.3,73.7 26.0,75.9 23.4,83.7 21.2,83.5 20.3,84.7 0.7,82.2" style="fill-opacity:0.7;stroke:black; stroke-width:0.5;"></polygon> 
+                                <polygon class="zone" data-zone="zone14" points="26.4,75.0 29.1,67.6 39.6,69.0 36.8,76.2" style="fill-opacity:0.7;stroke:black; stroke-width:0.5;"></polygon> 
+                                <polygon class="zone" data-zone="zone15" points="26.4,74.9 23.6,83.7 21.2,83.5 20.3,84.7 34.8,86.5 35.5,85.1 34.3,84.9 36.8,76.1" style="fill-opacity:0.7;stroke:black; stroke-width:0.5;"></polygon> 
+                                <polygon class="zone" data-zone="zone16" points="45.1,41.8 42.2,41.6 41.1,44.0 33.0,43.1 30.5,50.2 38.8,51.0 36.7,56.9 40.0,57.2" style="fill-opacity:0.7;stroke:black; stroke-width:0.5;"></polygon> 
+                                <polygon class="zone" data-zone="zone17" points="50.2,21.1 48.6,25.5 61.0,26.8 61.6,25.1 64.0,25.3 64.6,22.6" style="fill-opacity:0.7;stroke:black; stroke-width:0.5;"></polygon> 
+                                <polygon class="zone" data-zone="zone18" points="72.1,23.4 71.5,25.5 77.6,26.1 75.8,34.1 79.9,34.6 79.7,35.7 86.9,36.5 89.9,30.1 84.2,28.8 84.9,24.6" style="fill-opacity:0.7;stroke:black; stroke-width:0.5;"></polygon> 
+                                <polygon class="zone" data-zone="zone19" points="64.6,22.5 63.9,25.2 69.1,25.8 69.6,23.0" style="fill-opacity:0.7;stroke:black; stroke-width:0.5;"></polygon> 
+                                <polygon class="zone" data-zone="zone20" points="71.5,25.5 70.9,28.1 77.0,28.8 77.5,26.0" style="fill-opacity:0.7;stroke:black; stroke-width:0.5;"></polygon> 
+                                <polygon class="zone" data-zone="zone21" points="71.0,28.1 70.3,30.7 76.2,31.4 77.0,28.8" style="fill-opacity:0.7;stroke:black; stroke-width:0.5;"></polygon> 
+                                <polygon class="zone" data-zone="zone22" points="70.4,30.7 69.2,34.6 75.5,35.3 76.3,31.3" style="fill-opacity:0.7;stroke:black; stroke-width:0.5;"></polygon> 
                             </svg>
+                            <!-- <svg id="zones-L21" class="absolute top-0 left-0 w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
+                                Polygonal zones that will change color 
+                                id: 'zone1', name:  'Workstation A'
+                                id: 'zone2', name:  'Workstation B'
+                                id: 'zone3', name:  'Meeting Room1'
+                                id: 'zone4', name:  'Meeting Room2'
+                                id: 'zone5', name:  'Meeting Room3'
+                                id: 'zone15', name:  'Meeting Room4'
+                                id: 'zone6', name:  'Reception'
+                                id: 'zone7', name:  'Pantry1'
+                                id: 'zone8', name:  'Pantry2'
+                                id: 'zone10', name: 'Male Toilet'
+                                id: 'zone11', name: 'Female Toilet'
+                                id: 'zone12', name: 'Lobby'
+                                id: 'zone13', name: 'Lift Area'
+                                id: 'zone14', name: 'Corridore'
+                               
+                                <polygon class="zone " data-zone="zone1" points="45,79 57,95 62,88 65.8,92.5 80,74 64,58" style="fill-opacity:0.7;stroke:black; stroke-width:0.5;"></polygon>
+                                <polygon class="zone" data-zone="zone2" points="64.4,57.4 80.1,74.2 92.7,58.1 89.6,54.9 93.6,49.7 86,43 91.5,36.7 86.3,31.9 88.2,29.8 72.1,16.0 60.1,27.6 78.1,43.7" style="fill-opacity:0.7;stroke:black; stroke-width:0.5;"></polygon>
+                                <polygon class="zone" data-zone="zone3" points="25.2,60.9 19.9,55.3 15.7,59.3 20.8,65.6" style="fill-opacity:0.7;stroke:black; stroke-width:0.5;"></polygon>
+                                <polygon class="zone" data-zone="zone4" points="10.3,64.2 19.9,55.1 14.5,49 5.1,57.7" style="fill-opacity:0.7;stroke:black; stroke-width:0.5;"></polygon>
+                                <polygon class="zone" data-zone="zone5" points="35,55 60,55 60,90 55,95 40,95 35,90" style="fill-opacity:0.7;stroke:black; stroke-width:0.5;"></polygon>
+                                <polygon class="zone" data-zone="zone15" points="35,55 60,55 60,90 55,95 40,95 35,90" style="fill-opacity:0.7;stroke:black; stroke-width:0.5;"></polygon>
+                                <polygon class="zone" data-zone="zone6" points="65,55 90,55 90,90 85,95 70,95 65,90" style="fill-opacity:0.7;stroke:black; stroke-width:0.5;"></polygon>
+                            </svg> -->
                             <div id="mouse-coords" 
                                 class="absolute top-2 left-2 bg-white/70 p-1 rounded text-xs text-black">
                                 X: 0, Y: 0
@@ -252,11 +302,20 @@
             { id: 'zone6', name:  'Reception', co2eReduction: 165, status: 'occupied' },
             { id: 'zone7', name:  'Pantry1', co2eReduction: 165, status: 'occupied' },
             { id: 'zone8', name:  'Pantry2', co2eReduction: 165, status: 'occupied' },
+            { id: 'zone9', name:  'Pantry3', co2eReduction: 165, status: 'available' },
             { id: 'zone10', name: 'Male Toilet', co2eReduction: 165, status: 'occupied' },
-            { id: 'zone11', name: 'Female Toilet', co2eReduction: 165, status: 'occupied' },
-            { id: 'zone12', name: 'Lobby', co2eReduction: 165, status: 'occupied' },
-            { id: 'zone13', name: 'Lift Area', co2eReduction: 165, status: 'occupied' },
-            { id: 'zone14', name: 'Corridore', co2eReduction: 165, status: 'occupied' }
+            { id: 'zone11', name: 'Female Toilet', co2eReduction: 165, status: 'available' },
+            { id: 'zone12', name: 'Lobby', co2eReduction: 165, status: 'available' },
+            { id: 'zone13', name: 'Lift Area', co2eReduction: 165, status: 'available' },
+            { id: 'zone14', name: 'Corridore', co2eReduction: 165, status: 'occupied' },
+            { id: 'zone15', name: 'Corridore1', co2eReduction: 165, status: 'available' },
+            { id: 'zone16', name: 'Corridore2', co2eReduction: 165, status: 'occupied' },
+            { id: 'zone17', name: 'room1', co2eReduction: 165, status: 'available' },
+            { id: 'zone18', name: 'room2', co2eReduction: 165, status: 'occupied' },
+            { id: 'zone19', name: 'room3', co2eReduction: 165, status: 'available' },
+            { id: 'zone20', name: 'room4', co2eReduction: 165, status: 'occupied' },
+            { id: 'zone21', name: 'room5', co2eReduction: 165, status: 'available' },
+            { id: 'zone22', name: 'room6', co2eReduction: 165, status: 'occupied' },
         ];
 
         const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
@@ -289,7 +348,11 @@
             const y = ((event.clientY - rect.top) / rect.height * 100).toFixed(1);
 
             // Update text
-            coordsDisplay.textContent = `X: ${x}, Y: ${y}`;
+            coordsDisplay.textContent = `${x},${y}`;
+        });
+        container.addEventListener("click", () => {
+            console.log(coordsDisplay.textContent); 
+            // Logs: "X: 0, Y: 0" (or whatever the current text is)
         });
         // Update timestamp
         function updateTimestamp() {
@@ -465,7 +528,24 @@
             
             co2eChart.update();
         }
+        let currentFloor = "L20";
+        function switchFloor() {
+            const img = document.getElementById("floorplan-img");
+            const zonesL20 = document.getElementById("zones-L20");
+            const zonesL21 = document.getElementById("zones-L21");
 
+            if (currentFloor === "L20") {
+                img.src = "L21.png";
+                zonesL20.classList.add("hidden");
+                zonesL21.classList.remove("hidden");
+                currentFloor = "L21";
+            } else {
+                img.src = "L20.png";
+                zonesL21.classList.add("hidden");
+                zonesL20.classList.remove("hidden");
+                currentFloor = "L20";
+            }
+        }
         // Energy Efficiency Chart
         function initEfficiencyChart() {
             const ctx = efficiencyChartCanvas.getContext('2d');
@@ -656,6 +736,7 @@
                     toggleChartView();
             }, 30000);
             setInterval(fetchWeather, 600000);
+            setInterval(switchFloor, 600000);
         }
 
         // Start the application when the DOM is loaded
